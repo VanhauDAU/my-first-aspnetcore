@@ -1,38 +1,54 @@
-@model IEnumerable<MyFirstWebASP.Models.Student>
+@model MyFirstWebASP.Helpers.PaginatedList<MyFirstWebASP.Models.Student>
 
-@{
-    ViewData["Title"] = "Danh sách Sinh viên";
-}
+<h2>Danh sách Sinh viên loại giỏi</h2>
 
-<h2>Danh sách Sinh viên Giỏi (GPA >= 3.2)</h2>
+<form asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" 
+               class="form-control" placeholder="Tìm theo tên hoặc địa chỉ..." />
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        <a asp-action="Index" class="btn btn-secondary">Xóa bộ lọc</a>
+    </div>
+</form>
 
-<table class="table table-striped">
+<table class="table">
     <thead>
         <tr>
-            <th>ID</th>
             <th>Họ Tên</th>
-            <th>Điểm GPA</th>
-            <th>Địa Chỉ</th>
+            <th>Địa chỉ</th>
+            <th>GPA</th>
         </tr>
     </thead>
     <tbody>
-        @if (Model.Any()) 
-        {
-            @foreach (var item in Model) 
-            {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.FullName</td>
-                    <td>@item.Gpa.ToString("F2")</td>
-                    <td>@item.Address</td>
-                </tr>
-            }
-        }
-        else 
-        {
+        @foreach (var item in Model) {
             <tr>
-                <td colspan="3" class="text-center">Không có sinh viên nào đạt tiêu chuẩn loại giỏi (GPA >= 3.2)</td>
+                <td>@item.FullName</td>
+                <td>@item.Address</td>
+                <td>@item.Gpa.ToString("F2")</td>
             </tr>
         }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="d-flex justify-content-between">
+    <a asp-action="Index" 
+       asp-route-pageNumber="@(Model.PageIndex - 1)" 
+       asp-route-searchString="@ViewData["CurrentFilter"]"
+       class="btn btn-outline-primary @prevDisabled">
+        &larr; Trang trước
+    </a>
+    
+    <span>Trang @Model.PageIndex / @Model.TotalPages</span>
+
+    <a asp-action="Index" 
+       asp-route-pageNumber="@(Model.PageIndex + 1)" 
+       asp-route-searchString="@ViewData["CurrentFilter"]"
+       class="btn btn-outline-primary @nextDisabled">
+        Trang sau &rarr;
+    </a>
+</div>

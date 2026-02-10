@@ -13,11 +13,18 @@ public class StudentService : IStudentService
         _context = context;
     }
 
-    public async Task<List<Student>> GetTopStudentsAsync()
+    public async Task<Helpers.PaginatedList<Student>> GetStudentsAsync(string? searchString, int pageIndex, int pageSize)
     {
-        return await _context.Students
-                             .Where(s => s.Gpa >= 3.2)
-                             .OrderByDescending(s => s.Gpa)
-                             .ToListAsync();
+        var query = _context.Students.AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            query = query.Where(s => s.FullName.Contains(searchString) 
+                                || s.Address.Contains(searchString));
+        }
+
+        query = query.OrderByDescending(s => s.Gpa);
+
+        return await Helpers.PaginatedList<Student>.CreateAsync(query, pageIndex, pageSize);
     }
 }

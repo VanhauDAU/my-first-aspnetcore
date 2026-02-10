@@ -6,19 +6,18 @@ namespace MyFirstWebASP.Controllers;
 public class StudentController : Controller
 {
     private readonly IStudentService _studentService;
-
-    // Inject Service vào thông qua Constructor
     public StudentController(IStudentService studentService)
     {
         _studentService = studentService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string searchString, int? pageNumber)
     {
-        // Controller gọi Service xử lý, nó không quan tâm DB lấy dữ liệu thế nào
-        var students = await _studentService.GetTopStudentsAsync();
-        
-        // Trả về View và đính kèm dữ liệu (Model)
+        ViewData["CurrentFilter"] = searchString;
+        int pageSize = 5; 
+        int pageIndex = pageNumber ?? 1;
+        var students = await _studentService.GetStudentsAsync(searchString, pageIndex, pageSize);
+    
         return View(students);
     }
 }

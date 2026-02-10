@@ -4,5 +4,5 @@ namespace MyFirstWebASP.Services;
 
 public interface IStudentService 
 {
-    Task<List<Student>> GetTopStudentsAsync();
+    Task<Helpers.PaginatedList<Student>> GetStudentsAsync(string? searchString, int pageIndex, int pageSize);
 }
