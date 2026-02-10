@@ -1,0 +1,36 @@
+@model IEnumerable<MyFirstWebASP.Models.Student>
+
+@{
+    ViewData["Title"] = "Danh sách Sinh viên";
+}
+
+<h2>Danh sách Sinh viên Giỏi (GPA >= 3.2)</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Họ Tên</th>
+            <th>Điểm GPA</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any()) 
+        {
+            @foreach (var item in Model) 
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.FullName</td>
+                    <td>@item.Gpa.ToString("F2")</td>
+                </tr>
+            }
+        }
+        else 
+        {
+            <tr>
+                <td colspan="3" class="text-center">Không có sinh viên nào đạt tiêu chuẩn loại giỏi (GPA >= 3.2)</td>
+            </tr>
+        }
+    </tbody>
+</table>
