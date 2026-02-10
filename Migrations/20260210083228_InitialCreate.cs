@@ -4,10 +4,8 @@
 
 namespace MyFirstWebASP.Migrations
 {
-    /// <inheritdoc />
     public partial class InitialCreate : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -24,8 +22,6 @@ namespace MyFirstWebASP.Migrations
                     table.PrimaryKey("PK_Students", x => x.Id);
                 });
         }
-
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

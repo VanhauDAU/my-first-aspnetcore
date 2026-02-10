@@ -27,4 +27,31 @@ public class StudentService : IStudentService
 
         return await Helpers.PaginatedList<Student>.CreateAsync(query, pageIndex, pageSize);
     }
+
+    public async Task AddStudentAsync(Student student)
+    {
+        _context.Students.Add(student);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<Student?> GetByIdAsync(int id)
+    {
+        return await _context.Students.FindAsync(id);
+    }
+
+    public async Task UpdateStudentAsync(Student student)
+    {
+        _context.Students.Update(student);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteStudentAsync(int id)
+    {
+        var student = await _context.Students.FindAsync(id);
+        if (student != null)
+        {
+            _context.Students.Remove(student);
+            await _context.SaveChangesAsync();
+        }
+    }
 }
