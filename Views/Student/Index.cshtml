@@ -27,7 +27,7 @@
             <tr>
                 <td>@item.FullName</td>
                 <td>@item.Address</td>
-                <td>@item.Gpa.ToString("F2")</td>
+                <td>@item.Gpa.Value.ToString("F2")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Sửa</a>
                     
