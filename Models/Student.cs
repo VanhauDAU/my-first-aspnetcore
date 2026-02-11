@@ -15,5 +15,7 @@ public partial class Student
 
     public int? ClassId { get; set; }
 
+    public string? Phone { get; set; }
+
     public virtual Class? Class { get; set; }
 }

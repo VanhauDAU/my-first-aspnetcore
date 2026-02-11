@@ -19,6 +19,7 @@
             <th>Họ Tên</th>
             <th>Địa chỉ</th>
             <th>GPA</th>
+            <th>Lớp</th>
             <th>Hành động</th>
         </tr>
     </thead>
@@ -27,7 +28,8 @@
             <tr>
                 <td>@item.FullName</td>
                 <td>@item.Address</td>
-                <td>@item.Gpa.Value.ToString("F2")</td>
+                <td>@(item.Gpa.HasValue ? item.Gpa.Value.ToString("F2") : "N/A")</td>
+                <td>@item.Class?.ClassName</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Sửa</a>
                     
