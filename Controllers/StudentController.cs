@@ -2,24 +2,21 @@ using Microsoft.AspNetCore.Mvc;
 using MyFirstWebASP.Services;
 using MyFirstWebASP.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 namespace MyFirstWebASP.Controllers;
 
 public class StudentController : Controller
 {
     private readonly IStudentService _studentService;
-    private readonly SchoolDBContext _context;
 
-    public StudentController(IStudentService studentService, SchoolDBContext context)
+    public StudentController(IStudentService studentService)
     {
         _studentService = studentService;
-        _context = context;
     }
 
     public async Task<IActionResult> Index(string searchString, int? pageNumber)
     {
         ViewData["CurrentFilter"] = searchString;
-        int pageSize = 5; 
+        int pageSize = 8; 
         int pageIndex = pageNumber ?? 1;
         var students = await _studentService.GetStudentsAsync(searchString, pageIndex, pageSize);
     
@@ -27,9 +24,16 @@ public class StudentController : Controller
     }
     public async Task<IActionResult> Create()
     {
-        var classes = await _context.Classes.OrderBy(c => c.ClassName).ToListAsync();
-        ViewBag.ClassList = new SelectList(classes, "Id", "ClassName");
+        var faculties = await _studentService.GetFacultiesAsync();
+        ViewBag.FacultyList = new SelectList(faculties, "Id", "FacultyName");
         return View();
+    }
+
+    [HttpGet]
+    public async Task<JsonResult> GetClassesByFaculty(int facultyId)
+    {
+        var classes = await _studentService.GetClassesByFacultyAsync(facultyId);
+        return Json(classes.Select(c => new { id = c.Id, className = c.ClassName }));
     }
     [HttpPost]
     [ValidateAntiForgeryToken] 
@@ -44,11 +48,23 @@ public class StudentController : Controller
     }
     public async Task<IActionResult> Edit(int id)
     {
-        if(id == null) return NotFound();
-        var student = await _context.Students.FindAsync(id);
+        var (student, faculties, selectedFacultyId) = await _studentService.GetStudentForEditAsync(id);
         if (student == null) return NotFound();
-        var classes = await _context.Classes.OrderBy(c => c.ClassName).ToListAsync();
-        ViewBag.ClassList = new SelectList(classes, "Id", "ClassName", student.ClassId);
+        
+        ViewBag.FacultyList = new SelectList(faculties, "Id", "FacultyName");
+        ViewBag.SelectedFacultyId = selectedFacultyId;
+        
+        // Load lớp của khoa được chọn
+        if (selectedFacultyId.HasValue)
+        {
+            var classes = await _studentService.GetClassesByFacultyAsync(selectedFacultyId.Value);
+            ViewBag.ClassList = new SelectList(classes, "Id", "ClassName", student.ClassId);
+        }
+        else
+        {
+            ViewBag.ClassList = new SelectList(new List<Class>(), "Id", "ClassName");
+        }
+        
         return View(student);
     }
 

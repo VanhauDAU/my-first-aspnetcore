@@ -1,27 +1,96 @@
 @model MyFirstWebASP.Models.Student
 
-<h2>Chỉnh sửa sinh viên</h2>
+<div class="container mt-4">
+    <h2 class="text-primary">Chỉnh sửa sinh viên</h2>
+    <hr />
 
-<form asp-action="Edit">
-    <input type="hidden" asp-for="Id" /> <div class="mb-3">
-        <label>Họ Tên</label>
-        <input asp-for="FullName" class="form-control" />
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label">Họ và Tên</label>
+                    <input asp-for="FullName" class="form-control" placeholder="Nhập họ tên đầy đủ..." />
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Address" class="form-label">Địa chỉ</label>
+                    <input asp-for="Address" class="form-control" placeholder="Nhập địa chỉ..." />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Gpa" class="form-label">Điểm GPA (Thang 4)</label>
+                    <input asp-for="Gpa" class="form-control" type="number" step="0.01" min="0" max="4" />
+                    <span asp-validation-for="Gpa" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="facultySelect" class="control-label">Chọn Khoa</label>
+                    <select id="facultySelect" class="form-control" asp-items="ViewBag.FacultyList" data-selected="@ViewBag.SelectedFacultyId">
+                        <option value="">-- Chọn khoa --</option>
+                    </select>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="ClassId" class="control-label">Lớp học</label>
+                    <select asp-for="ClassId" id="classSelect" class="form-control" asp-items="ViewBag.ClassList">
+                        <option value="">-- Chọn lớp học --</option>
+                    </select>
+                    <span asp-validation-for="ClassId" class="text-danger"></span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">Cập nhật</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Quay lại danh sách</a>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="mb-3">
-        <label>Địa chỉ</label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label>Điểm GPA</label>
-        <input asp-for="Gpa" class="form-control" type="number" step="0.01" />
-    </div>
-    <div class="form-group mb-3">
-        <label asp-for="ClassId" class="control-label">Lớp học</label>
-        <select asp-for="ClassId" class="form-control" asp-items="ViewBag.ClassList">
-            <option value="">-- Chọn lớp học --</option>
-        </select>
-        <span asp-validation-for="ClassId" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-success">Cập nhật</button>
-    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-</form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            // Thiết lập giá trị khoa đã chọn
+            var selectedFacultyId = $('#facultySelect').data('selected');
+            if (selectedFacultyId) {
+                $('#facultySelect').val(selectedFacultyId);
+            }
+
+            // Khi thay đổi khoa
+            $('#facultySelect').change(function() {
+                var facultyId = $(this).val();
+                var classSelect = $('#classSelect');
+                
+                if (facultyId) {
+                    // Gọi API để lấy danh sách lớp theo khoa
+                    $.ajax({
+                        url: '@Url.Action("GetClassesByFaculty", "Student")',
+                        type: 'GET',
+                        data: { facultyId: facultyId },
+                        success: function(data) {
+                            classSelect.empty();
+                            classSelect.append('<option value="">-- Chọn lớp học --</option>');
+                            
+                            $.each(data, function(index, item) {
+                                classSelect.append(
+                                    $('<option></option>').val(item.id).text(item.className)
+                                );
+                            });
+                        },
+                        error: function() {
+                            alert('Lỗi khi lấy dữ liệu lớp học');
+                        }
+                    });
+                } else {
+                    classSelect.empty();
+                    classSelect.append('<option value="">-- Chọn lớp học --</option>');
+                }
+            });
+        });
+    </script>
+}

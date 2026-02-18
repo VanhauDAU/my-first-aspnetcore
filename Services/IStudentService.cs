@@ -9,4 +9,7 @@ public interface IStudentService
     Task AddStudentAsync(Student student);
     Task UpdateStudentAsync(Student student);
     Task DeleteStudentAsync(int id);
+    Task<List<Faculty>> GetFacultiesAsync();
+    Task<List<Class>> GetClassesByFacultyAsync(int facultyId);
+    Task<(Student? student, List<Faculty> faculties, int? selectedFacultyId)> GetStudentForEditAsync(int id);
 }

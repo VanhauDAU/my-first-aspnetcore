@@ -11,5 +11,9 @@ public partial class Class
 
     public string? Department { get; set; }
 
+    public int? FacultyId { get; set; }
+
+    public virtual Faculty? Faculty { get; set; }
+
     public virtual ICollection<Student> Students { get; set; } = new List<Student>();
 }

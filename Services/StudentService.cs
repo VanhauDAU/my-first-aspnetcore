@@ -56,4 +56,31 @@ public class StudentService : IStudentService
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<List<Faculty>> GetFacultiesAsync()
+    {
+        return await _context.Faculties.OrderBy(f => f.FacultyName).ToListAsync();
+    }
+
+    public async Task<List<Class>> GetClassesByFacultyAsync(int facultyId)
+    {
+        return await _context.Classes
+            .Where(c => c.FacultyId == facultyId)
+            .OrderBy(c => c.ClassName)
+            .ToListAsync();
+    }
+
+    public async Task<(Student? student, List<Faculty> faculties, int? selectedFacultyId)> GetStudentForEditAsync(int id)
+    {
+        var student = await _context.Students.Include(s => s.Class).FirstOrDefaultAsync(s => s.Id == id);
+        var faculties = await _context.Faculties.OrderBy(f => f.FacultyName).ToListAsync();
+        
+        int? selectedFacultyId = null;
+        if (student?.Class != null)
+        {
+            selectedFacultyId = student.Class.FacultyId;
+        }
+        
+        return (student, faculties, selectedFacultyId);
+    }
 }
